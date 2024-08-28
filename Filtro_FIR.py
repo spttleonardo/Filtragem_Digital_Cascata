@@ -166,7 +166,7 @@ beta = 0.1
 filtrado = IIR_auto(dados_filtrado, tempo_filtrado, beta)
 
 
-window_size = 55
+window_size = 10
 window = np.ones(window_size)/window_size
 sinal_final = convolve(filtrado, window)
 

@@ -92,7 +92,7 @@ def IIR_auto(dados, tempo, beta = 0.1):
 
 def main(path):
     # Importando dados
-    df = pd.read_csv("Original Data.csv", sep=';')
+    df = pd.read_csv(path, sep=';')
 
     # Atribuindo dados das colunas sample e peso atual a variveis criadas
     amostras = df['Sample']
@@ -185,19 +185,28 @@ def main(path):
     plt.ylabel('Amplitude')
     plt.grid(True)
     mplcursors.cursor(hover=True)
-    plt.show()
+    plt.show(block=False)
 
 
+# Opções de filtro
+options = ["Filtro FIR", "Filtro IIR - primeira ordem", "Média Móvel"]
 
 # Layout da janela
 layout = [
     [sg.Text('Selecione um arquivo')],
     [sg.Input(key='-FILE-', enable_events=True), sg.FileBrowse('Procurar')],
-    [sg.Button('Confirmar'), sg.Button('Cancelar')]
+    [sg.Text('Selecione uma opção:')],
+    [sg.Combo(options, key='-COMBO-', default_value='Selecione a Opção')],
+    [sg.Combo(options, key='-COMBO1-', default_value='Selecione a Opção')],
+    [sg.Combo(options, key='-COMBO2-', default_value='Selecione a Opção')],
+    [sg.Button('Confirmar'), sg.Button('Cancelar')],
+    [sg.Text('Peso [g]: ')],
+    [sg.Text(key='-CAMPO-', enable_events=True)]
 ]
 
 # Criação da janela
-window = sg.Window('Seleção de Arquivo', layout)
+window = sg.Window('Seleção de Arquivo', layout, size=(1200, 700))
+peso = 0
 
 # Loop de eventos
 while True:
@@ -205,14 +214,19 @@ while True:
 
     if event == sg.WINDOW_CLOSED or event == 'Cancelar':
         break
-    
+
     if event == 'Confirmar':
+        opcao_selecionada = values['-COMBO-']
+        opcao_selecionada1 = values['-COMBO1-']
+        opcao_selecionada2 = values['-COMBO2-']
         arquivo_selecionado = values['-FILE-']
-        if arquivo_selecionado:
+        if arquivo_selecionado and opcao_selecionada != 'Selecione a Opção':
             #sg.popup(f'Você selecionou o arquivo: {arquivo_selecionado}')
             main(arquivo_selecionado)
+            peso = 280
+            window['-CAMPO-'].update(peso)
         else:
-            sg.popup('Nenhum arquivo foi selecionado!')
+            sg.popup('Nenhum arquivo e/ou opção de filtro foi selecionado!')
 
 # Fechando a janela
 window.close()
