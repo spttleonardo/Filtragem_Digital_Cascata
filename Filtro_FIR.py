@@ -25,7 +25,8 @@ def my_fft(sinal, fs):
     plt.plot(frequencia, abs(S))
 
     mplcursors.cursor(hover=True)
-
+    
+    #plt.subplot(1, 3, 3)
     plt.title('Analise de Espectro')
     plt.xlabel('Frequencia em Hz')
     plt.ylabel('Amplitude')
@@ -61,6 +62,7 @@ def IIR_manual(dados, tempo, beta = 0.1):
 
     mplcursors.cursor(hover=True)
 
+    #plt.subplot(1, 3, 2)
     plt.title('Sinal filtrado com IIR manual')
     plt.xlabel('Tempo(s)')
     plt.ylabel('Amplitude')
@@ -86,7 +88,7 @@ def IIR_auto(dados, tempo, beta = 0.1):
 
 
 # Importando dados
-df = pd.read_csv("C:\\Users\\Leo\\Documents\\MATLAB\\Original Data.csv", sep=';')
+df = pd.read_csv("Original Data.csv", sep=';')
 
 # Atribuindo dados das colunas sample e peso atual a variveis criadas
 amostras = df['Sample']
@@ -95,15 +97,16 @@ dados = df['Dados,PesoAtual[%DB1003,DBD2]'].str.replace(',', '.').astype(float)
 # Criando vetor de tempo
 tempo = np.arange(len(dados)) * 1e-3
 
+plt.subplot(3, 1, 1)
 plt.plot(tempo, dados)  # Adiciona marcadores de pontos
 
 mplcursors.cursor(hover=True)
 
 plt.title('Sinal Atual ao longo do tempo')
 plt.xlabel('Tempo(s)')
-plt.ylabel('Pesoa Atual')
+plt.ylabel('Peso Atual')
 plt.grid(True)
-plt.show()
+#plt.show()
 
 # FFT
 #my_fft(dados, 1000)
@@ -142,6 +145,7 @@ dados_filtrado = convolve(dados, h)
 
 tempo_filtrado = np.arange(len(dados_filtrado)) * 1e-3
 
+plt.subplot(3, 1, 2)
 plt.plot(tempo_filtrado, dados_filtrado)
 
 mplcursors.cursor(hover=True)
@@ -150,7 +154,7 @@ plt.title('Sinal Filtrado com FIR automatico')
 plt.xlabel('Tempo(s)')
 plt.ylabel('Amplitude')
 plt.grid(True)
-plt.show()
+#plt.show()
 
 # Filtro IIR first order manual
 beta = 0.05
@@ -168,7 +172,9 @@ sinal_final = convolve(filtrado, window)
 
 tempo_final = np.arange(len(sinal_final)) *1e3
 
+plt.subplot(3, 1, 3)
 plt.plot(tempo_final, sinal_final)
+
 plt.legend()
 plt.title('Dados Filtrados e Média Móvel')
 plt.xlabel('Tempo (s)')
