@@ -9,6 +9,8 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import PySimpleGUI as sg
 
 def draw_plot(canvas, fig):
+    for widget in canvas.winfo_children():  # Adicionado para limpar o canvas existente
+        widget.destroy()  # Alterado de forget() para destroy()
     figure_canvas_agg = FigureCanvasTkAgg(fig, canvas)
     figure_canvas_agg.draw()
     figure_canvas_agg.get_tk_widget().pack(side='top', fill='both', expand=1)
@@ -96,7 +98,7 @@ def IIR_auto(dados, tempo, beta = 0.1):
     return filtrado
 
 
-def main(path):
+def main(path,cv_width,cv_height):
     # Importando dados
     df = pd.read_csv(path, sep=';')
 
@@ -107,7 +109,7 @@ def main(path):
     # Criando vetor de tempo
     tempo = np.arange(len(dados)) * 1e-3
 
-    fig, ax = plt.subplots(3, 1, figsize=(10, 8))  # Criando a figura e os eixos
+    fig, ax = plt.subplots(3, 1, figsize=(cv_width/100, cv_height/100))  # Criando a figura e os eixos
 
     ax[0].plot(tempo, dados)
     ax[0].set_title('Sinal Atual ao longo do tempo')
@@ -157,7 +159,8 @@ def main(path):
 
 # Opções de filtro
 options = ["Filtro FIR", "Filtro IIR - primeira ordem", "Média Móvel"]
-
+cv_width = 1000
+cv_height = 300
 # Layout da janela
 layout = [
     [sg.Text('Selecione um arquivo')],
@@ -169,11 +172,14 @@ layout = [
     [sg.Button('Confirmar'), sg.Button('Cancelar')],
     [sg.Text('Peso [g]: ')],
     [sg.Text(key='-CAMPO-', enable_events=True)],
-    [sg.Canvas(key='-CANVAS-')]
+    [sg.Canvas(key='-CANVAS-', size=(cv_width,cv_height), pad=(0, 0))]
 ]
 
 # Criação da janela
-window = sg.Window('Seleção de Arquivo', layout, size=(1200, 700))
+window = sg.Window('Seleção de Arquivo', layout, finalize = True, size=(1200, 600))
+#window.Maximize()
+canvas = window['-CANVAS-'].TKCanvas
+canvas.config(bg='lightblue')
 peso = 0
 # Inicialização do Canvas
 fig_canvas_agg = None
@@ -192,13 +198,15 @@ while True:
         arquivo_selecionado = values['-FILE-']
         if arquivo_selecionado and opcao_selecionada != 'Selecione a Opção':
             #sg.popup(f'Você selecionou o arquivo: {arquivo_selecionado}')
-            fig = main(arquivo_selecionado)
+            fig = main(arquivo_selecionado, cv_width,cv_height)
             # Se já houver um gráfico no canvas, removê-lo
+            
             if fig_canvas_agg:
-                fig_canvas_agg.get_tk_widget().forget()
+                fig_canvas_agg.get_tk_widget().destroy()
             
             # Desenhar o novo gráfico no Canvas
-            fig_canvas_agg = draw_plot(window['-CANVAS-'].TKCanvas, fig)
+            fig_canvas_agg = draw_plot(canvas, fig)#window['-CANVAS-'].TKCanvas, fig)
+            #window.Maximize()
 
             peso = 280
             window['-CAMPO-'].update(peso)
