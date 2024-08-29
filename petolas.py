@@ -209,7 +209,7 @@ def main(path, cv_width, cv_height):
     ws = wsd / fsamp
     wt = ws - wp
     M = np.ceil((6.6 * np.pi / wt)) + 1
-    hd = lowpass(ws, M)
+    hd = 1#lowpass(ws, M)
     w_hamm = np.hamming(M)
     h = hd * w_hamm
     dados_filtrado = convolve(dados, h)
@@ -223,7 +223,7 @@ def main(path, cv_width, cv_height):
 
     # Filtro IIR e Média Móvel
     beta = 0.1
-    filtrado = IIR_auto(dados_filtrado, tempo_filtrado, beta)
+    filtrado = 1#IIR_auto(dados_filtrado, tempo_filtrado, beta)
     window_size = 55
     window = np.ones(window_size) / window_size
     sinal_final = convolve(filtrado, window)
