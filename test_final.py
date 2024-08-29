@@ -12,8 +12,20 @@ class updateable_matplotlib_plot():
         self.fig_agg = None 
         self.figure = None
         self.canvas = canvas
+        
+    def plot(self, figure):  # Agora a função aceita uma figura já criada
+        self.figure = figure
+        self.figure_drawer()
 
-    def plot(self, data):
+    # Desenha a figura no canvas
+    def figure_drawer(self):
+        if self.fig_agg is not None: 
+            self.fig_agg.get_tk_widget().forget()
+        self.fig_agg = FigureCanvasTkAgg(self.figure, self.canvas.TKCanvas)
+        self.fig_agg.get_tk_widget().pack(side='top', fill='both', expand=1)
+        self.fig_agg.draw()
+
+    def plot1(self, data):
         self.data = data
         self.figure_controller()
         self.figure_drawer()
@@ -33,11 +45,11 @@ class updateable_matplotlib_plot():
             self.axes.autoscale_view() #scale the y scale
 
     #finally draw the figure on a canvas
-    def figure_drawer(self):
-        if self.fig_agg is not None: self.fig_agg.get_tk_widget().forget()
-        self.fig_agg = FigureCanvasTkAgg(self.figure, self.canvas.TKCanvas)
-        self.fig_agg.get_tk_widget().pack(side='top', fill='both', expand=1)
-        self.fig_agg.draw()
+    # def figure_drawer(self):
+    #     if self.fig_agg is not None: self.fig_agg.get_tk_widget().forget()
+    #     self.fig_agg = FigureCanvasTkAgg(self.figure, self.canvas.TKCanvas)
+    #     self.fig_agg.get_tk_widget().pack(side='top', fill='both', expand=1)
+    #     self.fig_agg.draw()
 
 def my_fft(sinal, fs):
     
@@ -202,7 +214,7 @@ if __name__ == '__main__':
     canvas.config(bg='lightblue')
     janela = updateable_matplotlib_plot(window['-CANVAS-']) #what canvas are you plotting it on
     window.finalize() #show the window
-    janela.plot(np.zeros(1024)) # plot an empty plot
+    janela.plot1(np.zeros(1024)) # plot an empty plot
 
     # Loop de eventos
     while True:
