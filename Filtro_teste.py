@@ -7,14 +7,18 @@ from scipy.signal import lfilter, convolve
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg 
 import PySimpleGUI as sg
 
-def draw_plot(canvas, figure_canvas_agg, fig):
+def draw_plot(canvas, figure_canvas_agg, fig,window):
     if figure_canvas_agg:
         figure_canvas_agg.get_tk_widget().forget()  # Remove o canvas existente sem destruir a janela
         figure_canvas_agg = None
+    width, height = window.size  # Largura e altura da janela
 
+    # Ajusta o tamanho da figura para que preencha a janela
+    fig.set_size_inches(width / 200, height / 200)
+    window.TKroot.attributes('-fullscreen', True) 
     figure_canvas_agg = FigureCanvasTkAgg(fig, canvas)
     figure_canvas_agg.draw()
-    figure_canvas_agg.get_tk_widget().pack(side='right', fill='none', expand=1)
+    figure_canvas_agg.get_tk_widget().pack(side='bottom', fill='both', expand=True)
     return figure_canvas_agg
 # def draw_plot(canvas, fig):
 #     for widget in canvas.winfo_children():  # Adicionado para limpar o canvas existente
@@ -117,7 +121,7 @@ def main(path,cv_width,cv_height):
     # Criando vetor de tempo
     tempo = np.arange(len(dados)) * 1e-3
 
-    fig, ax = plt.subplots(3, 1, figsize=(4,2))  # Criando a figura e os eixos
+    fig, ax = plt.subplots(3, 1)#, figsize=(7,4))  # Criando a figura e os eixos
 
     ax[0].plot(tempo, dados)
     ax[0].set_title('Sinal Atual ao longo do tempo')
@@ -169,17 +173,28 @@ def main(path,cv_width,cv_height):
 options = ["Filtro FIR", "Filtro IIR - primeira ordem", "Média Móvel"]
 cv_width = 800
 cv_height = 500
+# col1 = sg.Column([
+#     [sg.Text('Selecione um arquivo')],
+#     [sg.Input(key='-FILE-', enable_events=True), sg.FileBrowse('Procurar')],
+#     [sg.Text('Selecione uma opção:')],
+#     [sg.Combo(options, key='-COMBO-', default_value='Selecione a Opção')],
+#     [sg.Combo(options, key='-COMBO1-', default_value='Selecione a Opção')],
+#     [sg.Combo(options, key='-COMBO2-', default_value='Selecione a Opção')],
+#     [sg.Button('Confirmar'), sg.Button('Cancelar')],
+#     [sg.Text('Peso [g]: ')],
+#     [sg.Text(key='-CAMPO-', enable_events=True)]
+# ], size=(400, 500))
 col1 = sg.Column([
     [sg.Text('Selecione um arquivo')],
-    [sg.Input(key='-FILE-', enable_events=True), sg.FileBrowse('Procurar')],
+    [sg.Input(key='-FILE-', enable_events=True, expand_x=True), sg.FileBrowse('Procurar')],
     [sg.Text('Selecione uma opção:')],
-    [sg.Combo(options, key='-COMBO-', default_value='Selecione a Opção')],
-    [sg.Combo(options, key='-COMBO1-', default_value='Selecione a Opção')],
-    [sg.Combo(options, key='-COMBO2-', default_value='Selecione a Opção')],
-    [sg.Button('Confirmar'), sg.Button('Cancelar')],
+    [sg.Combo(options, key='-COMBO-', default_value='Selecione a Opção', expand_x=True)],
+    [sg.Combo(options, key='-COMBO1-', default_value='Selecione a Opção', expand_x=True)],
+    [sg.Combo(options, key='-COMBO2-', default_value='Selecione a Opção', expand_x=True)],
+    [sg.Button('Confirmar', expand_x=True), sg.Button('Cancelar', expand_x=True)],
     [sg.Text('Peso [g]: ')],
-    [sg.Text(key='-CAMPO-', enable_events=True)]
-], size=(400, 500))
+    [sg.Text(key='-CAMPO-', enable_events=True, expand_x=True)]
+], expand_y=True, expand_x=True)
 col2 = [
     [sg.Canvas(key='-CANVAS-', size=(cv_width,cv_height), pad=((0,0),(0,0)))]
 ]
@@ -218,7 +233,7 @@ while True:
             #     fig_canvas_agg.get_tk_widget().destroy()
             
             # Desenhar o novo gráfico no Canvas
-            fig_canvas_agg = draw_plot(canvas, fig_canvas_agg, fig)#window['-CANVAS-'].TKCanvas, fig)
+            fig_canvas_agg = draw_plot(canvas, fig_canvas_agg, fig,window)#window['-CANVAS-'].TKCanvas, fig)
             #window.Maximize()
 
             peso = 280
