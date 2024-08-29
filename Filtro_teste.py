@@ -5,16 +5,24 @@ import mplcursors
 import math
 from scipy.signal import lfilter, convolve
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg 
-
 import PySimpleGUI as sg
 
-def draw_plot(canvas, fig):
-    for widget in canvas.winfo_children():  # Adicionado para limpar o canvas existente
-        widget.destroy()  # Alterado de forget() para destroy()
+def draw_plot(canvas, figure_canvas_agg, fig):
+    if figure_canvas_agg:
+        figure_canvas_agg.get_tk_widget().forget()  # Remove o canvas existente sem destruir a janela
+        figure_canvas_agg = None
+
     figure_canvas_agg = FigureCanvasTkAgg(fig, canvas)
     figure_canvas_agg.draw()
-    figure_canvas_agg.get_tk_widget().pack(side='top', fill='both', expand=1)
+    figure_canvas_agg.get_tk_widget().pack(side='right', fill='none', expand=1)
     return figure_canvas_agg
+# def draw_plot(canvas, fig):
+#     for widget in canvas.winfo_children():  # Adicionado para limpar o canvas existente
+#         widget.destroy()  # Alterado de forget() para destroy()
+#     figure_canvas_agg = FigureCanvasTkAgg(fig, canvas)
+#     figure_canvas_agg.draw()
+#     figure_canvas_agg.get_tk_widget().pack(side='top', fill='both', expand=0)
+#     return figure_canvas_agg
 
 def my_fft(sinal, fs):
     
@@ -109,7 +117,7 @@ def main(path,cv_width,cv_height):
     # Criando vetor de tempo
     tempo = np.arange(len(dados)) * 1e-3
 
-    fig, ax = plt.subplots(3, 1, figsize=(cv_width/100, cv_height/100))  # Criando a figura e os eixos
+    fig, ax = plt.subplots(3, 1, figsize=(4,2))  # Criando a figura e os eixos
 
     ax[0].plot(tempo, dados)
     ax[0].set_title('Sinal Atual ao longo do tempo')
@@ -153,16 +161,15 @@ def main(path,cv_width,cv_height):
     ax[2].set_ylabel('Amplitude')
     ax[2].grid(True)
 
-    plt.tight_layout()
+    #plt.tight_layout()
     return fig  # Retornando o objeto Figure
 
 
 # Opções de filtro
 options = ["Filtro FIR", "Filtro IIR - primeira ordem", "Média Móvel"]
-cv_width = 1000
-cv_height = 300
-# Layout da janela
-layout = [
+cv_width = 800
+cv_height = 500
+col1 = sg.Column([
     [sg.Text('Selecione um arquivo')],
     [sg.Input(key='-FILE-', enable_events=True), sg.FileBrowse('Procurar')],
     [sg.Text('Selecione uma opção:')],
@@ -171,13 +178,19 @@ layout = [
     [sg.Combo(options, key='-COMBO2-', default_value='Selecione a Opção')],
     [sg.Button('Confirmar'), sg.Button('Cancelar')],
     [sg.Text('Peso [g]: ')],
-    [sg.Text(key='-CAMPO-', enable_events=True)],
-    [sg.Canvas(key='-CANVAS-', size=(cv_width,cv_height), pad=(0, 0))]
+    [sg.Text(key='-CAMPO-', enable_events=True)]
+], size=(400, 500))
+col2 = [
+    [sg.Canvas(key='-CANVAS-', size=(cv_width,cv_height), pad=((0,0),(0,0)))]
+]
+# Layout da janela
+layout = [
+    [col1,sg.VerticalSeparator(),sg.Column(col2, size=(800,500))]
 ]
 
 # Criação da janela
-window = sg.Window('Seleção de Arquivo', layout, finalize = True, size=(1200, 600))
-#window.Maximize()
+window = sg.Window('Seleção de Arquivo', layout, finalize = True, size=(1200, 500),resizable=True)
+window.Maximize()
 canvas = window['-CANVAS-'].TKCanvas
 canvas.config(bg='lightblue')
 peso = 0
@@ -201,11 +214,11 @@ while True:
             fig = main(arquivo_selecionado, cv_width,cv_height)
             # Se já houver um gráfico no canvas, removê-lo
             
-            if fig_canvas_agg:
-                fig_canvas_agg.get_tk_widget().destroy()
+            # if fig_canvas_agg:
+            #     fig_canvas_agg.get_tk_widget().destroy()
             
             # Desenhar o novo gráfico no Canvas
-            fig_canvas_agg = draw_plot(canvas, fig)#window['-CANVAS-'].TKCanvas, fig)
+            fig_canvas_agg = draw_plot(canvas, fig_canvas_agg, fig)#window['-CANVAS-'].TKCanvas, fig)
             #window.Maximize()
 
             peso = 280
