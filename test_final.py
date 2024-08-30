@@ -172,6 +172,8 @@ def main(path,opt1,opt2,opt3):#As opts ja vêm como string
             ax[1].set_xlabel('Tempo(s)')
             ax[1].set_ylabel('Amplitude')
             ax[1].grid(True)
+            #leo gay
+            
         elif opt1 == 'Filtro IIR':
             beta = 0.1
             dados_filtrado = IIR_auto(dados,beta)
