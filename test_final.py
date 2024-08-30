@@ -12,7 +12,7 @@ class updateable_matplotlib_plot():
         self.fig_agg = None 
         self.figure = None
         self.canvas = canvas
-        
+
     def plot(self, figure):  # Agora a função aceita uma figura já criada
         self.figure = figure
         self.figure_drawer()
@@ -50,7 +50,21 @@ class updateable_matplotlib_plot():
     #     self.fig_agg = FigureCanvasTkAgg(self.figure, self.canvas.TKCanvas)
     #     self.fig_agg.get_tk_widget().pack(side='top', fill='both', expand=1)
     #     self.fig_agg.draw()
+def filtro_fir():
+    fsamp = 1000
+    fp = 35
+    fs = 50
+    wpd = 2 * np.pi * fp
+    wsd = 2 * np.pi * fs
+    wp = wpd / fsamp
+    ws = wsd / fsamp
+    wt = ws - wp
+    M = np.ceil((6.6 * np.pi / wt)) + 1
+    hd = lowpass(ws, M)
+    w_hamm = np.hamming(M)
+    h = hd * w_hamm
 
+    return h
 def my_fft(sinal, fs):
     
     # Comprimento do sinal
@@ -111,7 +125,7 @@ def IIR_manual(dados, tempo, beta = 0.1):
     plt.grid(True)
 
     plt.show()
-def IIR_auto(dados, tempo, beta = 0.1):
+def IIR_auto(dados, beta):
 
     # Definindo os parâmetros
     beta = 0.1
@@ -124,8 +138,9 @@ def IIR_auto(dados, tempo, beta = 0.1):
     filtrado = lfilter(num, den, dados)
 
     
+    
     return filtrado
-def main(path,cv_width,cv_height):
+def main(path,opt1,opt2,opt3):#As opts ja vêm como string
     # Importando dados
     df = pd.read_csv(path, sep=';')
 
@@ -136,51 +151,111 @@ def main(path,cv_width,cv_height):
     # Criando vetor de tempo
     tempo = np.arange(len(dados)) * 1e-3
 
-    fig, ax = plt.subplots(3, 1)#, figsize=(7,4))  # Criando a figura e os eixos
+    fig, ax = plt.subplots(4, 1)#, figsize=(7,4))  # Criando a figura e os eixos
 
     ax[0].plot(tempo, dados)
     ax[0].set_title('Sinal Atual ao longo do tempo')
     ax[0].set_xlabel('Tempo(s)')
     ax[0].set_ylabel('Peso Atual')
     ax[0].grid(True)
+    
+    if opt1 != 'Selecione a Opção':
+        if opt1 == 'Filtro FIR':
+            # Filtro FIR
+            h = filtro_fir()
+            dados_filtrado = convolve(dados, h)
+            tempo_filtrado = np.arange(len(dados_filtrado)) * 1e-3
 
-    # Filtro FIR
-    fsamp = 1000
-    fp = 35
-    fs = 50
-    wpd = 2 * np.pi * fp
-    wsd = 2 * np.pi * fs
-    wp = wpd / fsamp
-    ws = wsd / fsamp
-    wt = ws - wp
-    M = np.ceil((6.6 * np.pi / wt)) + 1
-    hd = lowpass(ws, M)
-    w_hamm = np.hamming(M)
-    h = hd * w_hamm
-    dados_filtrado = convolve(dados, h)
-    tempo_filtrado = np.arange(len(dados_filtrado)) * 1e-3
+            ax[1].plot(tempo_filtrado, dados_filtrado)
+            ax[1].set_title('Sinal Filtrado com FIR automatico')
+            ax[1].set_xlabel('Tempo(s)')
+            ax[1].set_ylabel('Amplitude')
+            ax[1].grid(True)
+        elif opt1 == 'Filtro IIR':
+            beta = 0.1
+            dados_filtrado = IIR_auto(dados,beta)
+            tempo_filtrado = np.arange(len(dados_filtrado)) * 1e-3
+            ax[1].plot(tempo_filtrado, dados_filtrado)
+            ax[1].set_title('Sinal Filtrado com IIR automático')
+            ax[1].set_xlabel('Tempo(s)')
+            ax[1].set_ylabel('Amplitude')
+            ax[1].grid(True)
+        elif opt1 == 'Média Móvel':
+            window_size = 55
+            window = np.ones(window_size) / window_size
+            dados_filtrado = convolve(dados, window)
+            tempo_filtrado = np.arange(len(dados_filtrado)) * 1e3
+            ax[1].plot(tempo_filtrado, dados_filtrado)
+            ax[1].set_title('Sinal Filtrado com Média Móvel')
+            ax[1].set_xlabel('Tempo(s)')
+            ax[1].set_ylabel('Amplitude')
+            ax[1].grid(True)
 
-    ax[1].plot(tempo_filtrado, dados_filtrado)
-    ax[1].set_title('Sinal Filtrado com FIR automatico')
-    ax[1].set_xlabel('Tempo(s)')
-    ax[1].set_ylabel('Amplitude')
-    ax[1].grid(True)
+    if opt2 != 'Selecione a Opção':
+        if opt2 == 'Filtro FIR':
+            # Filtro FIR
+            h = filtro_fir()
+            dados_filtrado = convolve(dados_filtrado, h)
+            tempo_filtrado = np.arange(len(dados_filtrado)) * 1e-3
 
-    # Filtro IIR e Média Móvel
-    beta = 0.1
-    filtrado = IIR_auto(dados_filtrado, tempo_filtrado, beta)
-    window_size = 55
-    window = np.ones(window_size) / window_size
-    sinal_final = convolve(filtrado, window)
-    tempo_final = np.arange(len(sinal_final)) * 1e3
+            ax[2].plot(tempo_filtrado, dados_filtrado)
+            ax[2].set_title('Sinal Filtrado com FIR automatico')
+            ax[2].set_xlabel('Tempo(s)')
+            ax[2].set_ylabel('Amplitude')
+            ax[2].grid(True)
+        elif opt2 == 'Filtro IIR':
+            beta = 0.1
+            dados_filtrado = IIR_auto(dados_filtrado,beta)
+            tempo_filtrado = np.arange(len(dados_filtrado)) * 1e-3
+            ax[2].plot(tempo_filtrado, dados_filtrado)
+            ax[2].set_title('Sinal Filtrado com IIR automático')
+            ax[2].set_xlabel('Tempo(s)')
+            ax[2].set_ylabel('Amplitude')
+            ax[2].grid(True)
+        elif opt2 == 'Média Móvel':
+            window_size = 55
+            window = np.ones(window_size) / window_size
+            dados_filtrado = convolve(dados_filtrado, window)
+            tempo_filtrado = np.arange(len(dados_filtrado)) * 1e3
+            ax[2].plot(tempo_filtrado, dados_filtrado)
+            ax[2].set_title('Sinal Filtrado com Média Móvel')
+            ax[2].set_xlabel('Tempo(s)')
+            ax[2].set_ylabel('Amplitude')
+            ax[2].grid(True)
 
-    ax[2].plot(tempo_final, sinal_final)
-    ax[2].set_title('Dados Filtrados e Média Móvel')
-    ax[2].set_xlabel('Tempo (s)')
-    ax[2].set_ylabel('Amplitude')
-    ax[2].grid(True)
+    if opt3 != 'Selecione a Opção':
+        if opt3 == 'Filtro FIR':
+            # Filtro FIR
+            h = filtro_fir()
+            dados_filtrado = convolve(dados_filtrado, h)
+            tempo_filtrado = np.arange(len(dados_filtrado)) * 1e-3
 
-    #plt.tight_layout()
+            ax[3].plot(tempo_filtrado, dados_filtrado)
+            ax[3].set_title('Sinal Filtrado com FIR automatico')
+            ax[3].set_xlabel('Tempo(s)')
+            ax[3].set_ylabel('Amplitude')
+            ax[3].grid(True)
+        elif opt3 == 'Filtro IIR':
+            beta = 0.1
+            dados_filtrado = IIR_auto(dados_filtrado,beta)
+            tempo_filtrado = np.arange(len(dados_filtrado)) * 1e-3
+            ax[3].plot(tempo_filtrado, dados_filtrado)
+            ax[3].set_title('Sinal Filtrado com IIR automático')
+            ax[3].set_xlabel('Tempo(s)')
+            ax[3].set_ylabel('Amplitude')
+            ax[3].grid(True)
+        elif opt3 == 'Média Móvel':
+            window_size = 55
+            window = np.ones(window_size) / window_size
+            dados_filtrado = convolve(dados_filtrado, window)
+            tempo_filtrado = np.arange(len(dados_filtrado)) * 1e3
+            ax[3].plot(tempo_filtrado, dados_filtrado)
+            ax[3].set_title('Sinal Filtrado com Média Móvel')
+            ax[3].set_xlabel('Tempo(s)')
+            ax[3].set_ylabel('Amplitude')
+            ax[3].grid(True)
+    
+
     return fig  # Retornando o objeto Figure
 
 if __name__ == '__main__':
@@ -228,9 +303,9 @@ if __name__ == '__main__':
             opcao_selecionada1 = values['-COMBO1-']
             opcao_selecionada2 = values['-COMBO2-']
             arquivo_selecionado = values['-FILE-']
-            if arquivo_selecionado and opcao_selecionada != 'Selecione a Opção':
+            if arquivo_selecionado and (opcao_selecionada != 'Selecione a Opção' or opcao_selecionada1 != 'Selecione a Opção' or opcao_selecionada != 'Selecione a Opção'):
                 #sg.popup(f'Você selecionou o arquivo: {arquivo_selecionado}')
-                fig = main(arquivo_selecionado, cv_width,cv_height)
+                fig = main(arquivo_selecionado,opcao_selecionada,opcao_selecionada1,opcao_selecionada2)
                 janela.plot(fig)
             else:
                 sg.popup('Nenhum arquivo e/ou opção de filtro foi selecionado!')
