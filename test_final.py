@@ -6,6 +6,7 @@ import math
 from scipy.signal import lfilter, convolve
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg 
 import PySimpleGUI as sg
+import csv 
 
 class updateable_matplotlib_plot():
     def __init__(self, canvas) -> None:
@@ -145,6 +146,14 @@ def main(path,opt1,opt2,opt3):#As opts ja vêm como string
     # Importando dados
     df = pd.read_csv(path, sep=';')
 
+    contador=0
+
+    if opt1 != 'Selecione a Opção':
+        contador+=1
+    if opt2 != 'Selecione a Opção':
+        contador+=1
+    if opt3 != 'Selecione a Opção':
+        contador+=1
     # Atribuindo dados das colunas sample e peso atual a variveis criadas
     amostras = df['Sample']
     dados = df['Dados,PesoAtual[%DB1003,DBD2]'].str.replace(',', '.').astype(float)
@@ -152,7 +161,7 @@ def main(path,opt1,opt2,opt3):#As opts ja vêm como string
     # Criando vetor de tempo
     tempo = np.arange(len(dados)) * 1e-3
 
-    fig, ax = plt.subplots(4, 1, figsize=(10,8))  # Criando a figura e os eixos
+    fig, ax = plt.subplots(contador+1, 1, figsize=(10,8))  # Criando a figura e os eixos
 
     ax[0].plot(tempo, dados)
     mplcursors.cursor(hover=True)
@@ -269,9 +278,10 @@ def main(path,opt1,opt2,opt3):#As opts ja vêm como string
             ax[3].set_xlabel('Tempo(s)')
             ax[3].set_ylabel('Amplitude')
             ax[3].grid(True)
-    ax[3].set_xlabel('Tempo(s)')
 
-    return fig  # Retornando o objeto Figure
+    ax[contador-1].set_xlabel('Tempo(s)')
+
+    return fig,dados_filtrado  # Retornando o objeto Figure
 
 if __name__ == '__main__':
     # Opções de filtro
@@ -290,7 +300,7 @@ if __name__ == '__main__':
         [sg.Text(key='-CAMPO-', enable_events=True, expand_x=True)]
     ], expand_y=True, expand_x=False)
     col2 = [
-        [sg.Canvas(key='-CANVAS-', size=(cv_width,cv_height), pad=((100,0),(0,0)))]
+        [sg.Canvas(key='-CANVAS-', size=(cv_width,cv_height), pad=((250,0),(50,0)))]
     ]
     # Layout da janela
     layout = [
@@ -309,10 +319,8 @@ if __name__ == '__main__':
     # Loop de eventos
     while True:
         event, values = window.read()
-
         if event == sg.WINDOW_CLOSED or event == 'Cancelar':
             break
-
         if event == 'Confirmar':
             opcao_selecionada = values['-COMBO-']
             opcao_selecionada1 = values['-COMBO1-']
@@ -321,8 +329,12 @@ if __name__ == '__main__':
             if arquivo_selecionado and (opcao_selecionada != 'Selecione a Opção' or opcao_selecionada1 != 'Selecione a Opção' or opcao_selecionada != 'Selecione a Opção'):
                 #Adicionar contador de graficos e exportar dados
                 #sg.popup(f'Você selecionou o arquivo: {arquivo_selecionado}')
-                fig = main(arquivo_selecionado,opcao_selecionada,opcao_selecionada1,opcao_selecionada2)
+                fig,dados = main(arquivo_selecionado,opcao_selecionada,opcao_selecionada1,opcao_selecionada2)
                 janela.plot(fig)
+                with open('filtrado.csv', 'w') as f:
+                    # using csv.writer method from CSV package
+                    write = csv.writer(f)
+                    write.writerow(dados)
             else:
                 sg.popup('Nenhum arquivo e/ou opção de filtro foi selecionado!')
 
