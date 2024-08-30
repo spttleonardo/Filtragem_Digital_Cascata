@@ -34,7 +34,7 @@ class updateable_matplotlib_plot():
     def figure_controller(self):
         #first run....
         if self.figure is None:
-            self.figure = plt.figure()
+            self.figure = plt.figure(figsize=(10,8))
             self.axes = self.figure.add_subplot(111)
             self.line, = self.axes.plot(self.data)
             self.axes.set_title("Example of a Matplotlib plot updating in PySimpleGUI")
@@ -152,12 +152,13 @@ def main(path,opt1,opt2,opt3):#As opts ja vêm como string
     # Criando vetor de tempo
     tempo = np.arange(len(dados)) * 1e-3
 
-    fig, ax = plt.subplots(4, 1)#, figsize=(7,4))  # Criando a figura e os eixos
+    fig, ax = plt.subplots(4, 1, figsize=(10,8))  # Criando a figura e os eixos
 
     ax[0].plot(tempo, dados)
+    mplcursors.cursor(hover=True)
     ax[0].set_title('Sinal Atual ao longo do tempo')
-    ax[0].set_xlabel('Tempo(s)')
     ax[0].set_ylabel('Peso Atual')
+    ax[0].set_xticks([])
     ax[0].grid(True)
     
     if opt1 != 'Selecione a Opção':
@@ -168,12 +169,12 @@ def main(path,opt1,opt2,opt3):#As opts ja vêm como string
             tempo_filtrado = np.arange(len(dados_filtrado)) * 1e-3
 
             ax[1].plot(tempo_filtrado, dados_filtrado)
+            mplcursors.cursor(hover=True)
             ax[1].set_title('Sinal Filtrado com FIR automatico')
-            ax[1].set_xlabel('Tempo(s)')
             ax[1].set_ylabel('Amplitude')
+            ax[1].set_xticks([])
             ax[1].grid(True)
-            #leo gay
-            
+
         elif opt1 == 'Filtro IIR':
             beta = 0.1
             dados_filtrado = IIR_auto(dados,beta)
@@ -182,9 +183,10 @@ def main(path,opt1,opt2,opt3):#As opts ja vêm como string
             print(type(dados_filtrado))
             print(dados_filtrado)
             ax[1].plot(tempo_filtrado, dados_filtrado)
+            mplcursors.cursor(hover=True)
             ax[1].set_title('Sinal Filtrado com IIR automático')
-            ax[1].set_xlabel('Tempo(s)')
             ax[1].set_ylabel('Amplitude')
+            ax[1].set_xticks([])
             ax[1].grid(True)
         elif opt1 == 'Média Móvel':
             window_size = 55
@@ -192,9 +194,10 @@ def main(path,opt1,opt2,opt3):#As opts ja vêm como string
             dados_filtrado = convolve(dados, window)
             tempo_filtrado = np.arange(len(dados_filtrado)) * 1e-3
             ax[1].plot(tempo_filtrado, dados_filtrado)
+            mplcursors.cursor(hover=True)
             ax[1].set_title('Sinal Filtrado com Média Móvel')
-            ax[1].set_xlabel('Tempo(s)')
             ax[1].set_ylabel('Amplitude')
+            ax[1].set_xticks([])
             ax[1].grid(True)
 
     if opt2 != 'Selecione a Opção':
@@ -205,18 +208,20 @@ def main(path,opt1,opt2,opt3):#As opts ja vêm como string
             tempo_filtrado = np.arange(len(dados_filtrado)) * 1e-3
 
             ax[2].plot(tempo_filtrado, dados_filtrado)
+            mplcursors.cursor(hover=True)
             ax[2].set_title('Sinal Filtrado com FIR automatico')
-            ax[2].set_xlabel('Tempo(s)')
             ax[2].set_ylabel('Amplitude')
+            ax[2].set_xticks([])
             ax[2].grid(True)
         elif opt2 == 'Filtro IIR':
             beta = 0.1
             dados_filtrado = IIR_auto(dados_filtrado,beta)
             tempo_filtrado = np.arange(len(dados_filtrado)) * 1e-3
             ax[2].plot(tempo_filtrado, dados_filtrado)
+            mplcursors.cursor(hover=True)
             ax[2].set_title('Sinal Filtrado com IIR automático')
-            ax[2].set_xlabel('Tempo(s)')
             ax[2].set_ylabel('Amplitude')
+            ax[2].set_xticks([])
             ax[2].grid(True)
         elif opt2 == 'Média Móvel':
             window_size = 55
@@ -224,9 +229,10 @@ def main(path,opt1,opt2,opt3):#As opts ja vêm como string
             dados_filtrado = convolve(dados_filtrado, window)
             tempo_filtrado = np.arange(len(dados_filtrado)) * 1e-3
             ax[2].plot(tempo_filtrado, dados_filtrado)
+            mplcursors.cursor(hover=True)
             ax[2].set_title('Sinal Filtrado com Média Móvel')
-            ax[2].set_xlabel('Tempo(s)')
             ax[2].set_ylabel('Amplitude')
+            ax[2].set_xticks([])
             ax[2].grid(True)
 
     if opt3 != 'Selecione a Opção':
@@ -237,6 +243,7 @@ def main(path,opt1,opt2,opt3):#As opts ja vêm como string
             tempo_filtrado = np.arange(len(dados_filtrado)) * 1e-3
 
             ax[3].plot(tempo_filtrado, dados_filtrado)
+            mplcursors.cursor(hover=True)
             ax[3].set_title('Sinal Filtrado com FIR automatico')
             ax[3].set_xlabel('Tempo(s)')
             ax[3].set_ylabel('Amplitude')
@@ -246,6 +253,7 @@ def main(path,opt1,opt2,opt3):#As opts ja vêm como string
             dados_filtrado = IIR_auto(dados_filtrado,beta)
             tempo_filtrado = np.arange(len(dados_filtrado)) * 1e-3
             ax[3].plot(tempo_filtrado, dados_filtrado)
+            mplcursors.cursor(hover=True)
             ax[3].set_title('Sinal Filtrado com IIR automático')
             ax[3].set_xlabel('Tempo(s)')
             ax[3].set_ylabel('Amplitude')
@@ -256,19 +264,20 @@ def main(path,opt1,opt2,opt3):#As opts ja vêm como string
             dados_filtrado = convolve(dados_filtrado, window)
             tempo_filtrado = np.arange(len(dados_filtrado)) * 1e-3
             ax[3].plot(tempo_filtrado, dados_filtrado)
+            mplcursors.cursor(hover=True)
             ax[3].set_title('Sinal Filtrado com Média Móvel')
             ax[3].set_xlabel('Tempo(s)')
             ax[3].set_ylabel('Amplitude')
             ax[3].grid(True)
-    
+    ax[3].set_xlabel('Tempo(s)')
 
     return fig  # Retornando o objeto Figure
 
 if __name__ == '__main__':
     # Opções de filtro
     options = ["Filtro FIR", "Filtro IIR", "Média Móvel"]
-    cv_width = 800
-    cv_height = 500
+    cv_width = 1000
+    cv_height = 1000
     col1 = sg.Column([
         [sg.Text('Selecione um arquivo')],
         [sg.Input(key='-FILE-', enable_events=True, expand_x=True), sg.FileBrowse('Procurar')],
@@ -279,17 +288,17 @@ if __name__ == '__main__':
         [sg.Button('Confirmar', expand_x=True), sg.Button('Cancelar', expand_x=True)],
         [sg.Text('Peso [g]: ')],
         [sg.Text(key='-CAMPO-', enable_events=True, expand_x=True)]
-    ], expand_y=True, expand_x=True)
+    ], expand_y=True, expand_x=False)
     col2 = [
-        [sg.Canvas(key='-CANVAS-', size=(cv_width,cv_height), pad=((0,0),(0,0)))]
+        [sg.Canvas(key='-CANVAS-', size=(cv_width,cv_height), pad=((100,0),(0,0)))]
     ]
     # Layout da janela
     layout = [
-        [col1,sg.VerticalSeparator(),sg.Column(col2, size=(800,500))]
+        [col1,sg.VerticalSeparator(),sg.Column(col2,size=(1500,1500))]
     ]
 
     # Criação da janela
-    window = sg.Window('Seleção de Arquivo', layout, finalize = True, size=(1200, 500),resizable=True)
+    window = sg.Window('Seleção de Arquivo', layout, finalize = True, size=(2000, 2000),resizable=True)
     window.Maximize()
     canvas = window['-CANVAS-'].TKCanvas
     canvas.config(bg='lightblue')
@@ -310,6 +319,7 @@ if __name__ == '__main__':
             opcao_selecionada2 = values['-COMBO2-']
             arquivo_selecionado = values['-FILE-']
             if arquivo_selecionado and (opcao_selecionada != 'Selecione a Opção' or opcao_selecionada1 != 'Selecione a Opção' or opcao_selecionada != 'Selecione a Opção'):
+                #Adicionar contador de graficos e exportar dados
                 #sg.popup(f'Você selecionou o arquivo: {arquivo_selecionado}')
                 fig = main(arquivo_selecionado,opcao_selecionada,opcao_selecionada1,opcao_selecionada2)
                 janela.plot(fig)
