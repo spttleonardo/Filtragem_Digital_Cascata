@@ -139,6 +139,7 @@ def IIR_auto(dados, beta):
 
     
     
+    
     return filtrado
 def main(path,opt1,opt2,opt3):#As opts ja vêm como string
     # Importando dados
@@ -175,6 +176,9 @@ def main(path,opt1,opt2,opt3):#As opts ja vêm como string
             beta = 0.1
             dados_filtrado = IIR_auto(dados,beta)
             tempo_filtrado = np.arange(len(dados_filtrado)) * 1e-3
+            print(len(dados_filtrado))
+            print(type(dados_filtrado))
+            print(dados_filtrado)
             ax[1].plot(tempo_filtrado, dados_filtrado)
             ax[1].set_title('Sinal Filtrado com IIR automático')
             ax[1].set_xlabel('Tempo(s)')
@@ -184,7 +188,7 @@ def main(path,opt1,opt2,opt3):#As opts ja vêm como string
             window_size = 55
             window = np.ones(window_size) / window_size
             dados_filtrado = convolve(dados, window)
-            tempo_filtrado = np.arange(len(dados_filtrado)) * 1e3
+            tempo_filtrado = np.arange(len(dados_filtrado)) * 1e-3
             ax[1].plot(tempo_filtrado, dados_filtrado)
             ax[1].set_title('Sinal Filtrado com Média Móvel')
             ax[1].set_xlabel('Tempo(s)')
@@ -216,7 +220,7 @@ def main(path,opt1,opt2,opt3):#As opts ja vêm como string
             window_size = 55
             window = np.ones(window_size) / window_size
             dados_filtrado = convolve(dados_filtrado, window)
-            tempo_filtrado = np.arange(len(dados_filtrado)) * 1e3
+            tempo_filtrado = np.arange(len(dados_filtrado)) * 1e-3
             ax[2].plot(tempo_filtrado, dados_filtrado)
             ax[2].set_title('Sinal Filtrado com Média Móvel')
             ax[2].set_xlabel('Tempo(s)')
@@ -248,7 +252,7 @@ def main(path,opt1,opt2,opt3):#As opts ja vêm como string
             window_size = 55
             window = np.ones(window_size) / window_size
             dados_filtrado = convolve(dados_filtrado, window)
-            tempo_filtrado = np.arange(len(dados_filtrado)) * 1e3
+            tempo_filtrado = np.arange(len(dados_filtrado)) * 1e-3
             ax[3].plot(tempo_filtrado, dados_filtrado)
             ax[3].set_title('Sinal Filtrado com Média Móvel')
             ax[3].set_xlabel('Tempo(s)')
@@ -260,7 +264,7 @@ def main(path,opt1,opt2,opt3):#As opts ja vêm como string
 
 if __name__ == '__main__':
     # Opções de filtro
-    options = ["Filtro FIR", "Filtro IIR - primeira ordem", "Média Móvel"]
+    options = ["Filtro FIR", "Filtro IIR", "Média Móvel"]
     cv_width = 800
     cv_height = 500
     col1 = sg.Column([
