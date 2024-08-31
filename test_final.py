@@ -296,7 +296,6 @@ if __name__ == '__main__':
         [sg.Combo(options, key='-COMBO1-', default_value='Selecione a Opção', expand_x=True)],
         [sg.Combo(options, key='-COMBO2-', default_value='Selecione a Opção', expand_x=True)],
         [sg.Button('Confirmar', expand_x=True), sg.Button('Cancelar', expand_x=True)],
-        [sg.Text('Peso [g]: ')],
         [sg.Text(key='-CAMPO-', enable_events=True, expand_x=True)]
     ], expand_y=True, expand_x=False)
     col2 = [
