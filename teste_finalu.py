@@ -154,47 +154,127 @@ def confirm_action():
     else:
         messagebox.showerror("Erro", "Nenhum arquivo e/ou opção de filtro foi selecionado!")
 
+def changeOnHover(button, colorOnHover, colorOnLeave):
+ 
+    # adjusting background of the widget
+    # background on entering widget
+    button.bind("<Enter>", func=lambda e: button.config(
+        background=colorOnHover))
+ 
+    # background color on leving widget
+    button.bind("<Leave>", func=lambda e: button.config(
+        background=colorOnLeave))
+    
+# # Criação da janela principal
+# root = tk.Tk()
+# root.title("Seleção de Arquivo")
+# root.geometry("1500x1000")
+
+# frame_left = tk.Frame(root)
+# frame_left.pack(side=tk.LEFT, fill=tk.Y, padx=50, pady=50)
+
+# frame_right = tk.Frame(root)
+# frame_right.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+# label_file = tk.Label(frame_left, text="Selecione um arquivo:")
+# label_file.pack(pady=5)
+# entry_file = tk.Entry(frame_left, width=50)
+# entry_file.pack(pady=5)
+# btn_browse = tk.Button(frame_left, text="Procurar", command=browse_file)
+# btn_browse.pack(pady=5)
+
+# options = ["Filtro FIR", "Filtro IIR", "Média Móvel"]
+
+# label_opt1 = tk.Label(frame_left, text="Filtro 1:")
+# label_opt1.pack(side=tk.LEFT, pady=5)
+# combo_opt1 = ttk.Combobox(frame_left, values=options, state="readonly")
+# combo_opt1.set("Selecione a Opção")
+# combo_opt1.pack(side=tk.LEFT, fill = tk.X, expand=True)
+
+
+# label_1 = tk.Label(frame_left, text="")
+# label_1.pack(pady=30)
+
+# label_opt2 = tk.Label(frame_left, text="Selecione a Opção 2:")
+# label_opt2.pack(side=tk.LEFT, pady=5)
+# combo_opt2 = ttk.Combobox(frame_left, values=options, state="readonly")
+# combo_opt2.set("Selecione a Opção")
+# combo_opt2.pack(side=tk.LEFT, fill = tk.X, expand=True)
+
+
+# label_opt3 = tk.Label(frame_left, text="Selecione a Opção 3:")
+# label_opt3.pack(side=tk.LEFT, pady=5)
+# combo_opt3 = ttk.Combobox(frame_left, values=options, state="readonly")
+# combo_opt3.set("Selecione a Opção")
+# combo_opt3.pack(side=tk.LEFT, fill = tk.X, expand=True)
+
+# btn_confirm = tk.Button(frame_left, text="Confirmar", command=confirm_action)
+# #changeOnHover(btn_confirm, "red", "yellow")
+# btn_confirm.pack(pady=10)
+
+# canvas = tk.Canvas(frame_right, bg="lightblue")
+# canvas.pack(fill=tk.BOTH, expand=True)
+
+# janela = UpdateableMatplotlibPlot(canvas)
+# janela.plot1(np.zeros(1024))
 # Criação da janela principal
 root = tk.Tk()
 root.title("Seleção de Arquivo")
 root.geometry("1500x1000")
 
+# Frame esquerdo
 frame_left = tk.Frame(root)
 frame_left.pack(side=tk.LEFT, fill=tk.Y, padx=50, pady=50)
 
+# Frame direito
 frame_right = tk.Frame(root)
 frame_right.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
+# Label e Entry para seleção de arquivo
 label_file = tk.Label(frame_left, text="Selecione um arquivo:")
-label_file.pack(pady=5)
+label_file.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 entry_file = tk.Entry(frame_left, width=50)
-entry_file.pack(pady=5)
+entry_file.grid(row=0, column=1, padx=5, pady=5, sticky="w")
 btn_browse = tk.Button(frame_left, text="Procurar", command=browse_file)
-btn_browse.pack(pady=5)
+btn_browse.grid(row=0, column=2, padx=5, pady=5)
 
+# Opções para combobox
 options = ["Filtro FIR", "Filtro IIR", "Média Móvel"]
 
-label_opt1 = tk.Label(frame_left, text="Selecione a Opção 1:")
-label_opt1.pack(pady=5)
-combo_opt1 = ttk.Combobox(frame_left, values=options, state="readonly")
-combo_opt1.set("Selecione a Opção")
-combo_opt1.pack(pady=5)
+style = ttk.Style()
+style.configure('Custom.TCombobox',font=('Arial', 50), padding=15)
 
-label_opt2 = tk.Label(frame_left, text="Selecione a Opção 2:")
-label_opt2.pack(pady=5)
+# Label e Combobox para Filtro 1
+label_opt1 = tk.Label(frame_left, text="Filtro 1:", font=('Ubuntu Medium', 15))
+label_opt1.grid(row=1, column=0, padx=5, pady=50, sticky="w")
+combo_opt1 = ttk.Combobox(frame_left, values=options, state="readonly", style='Custom.TCombobox')
+combo_opt1.set("Selecione a Opção")
+combo_opt1.configure(font=('Arial', 12))
+combo_opt1.grid(row=1, column=1, padx=0, pady=50, sticky="ew")
+
+# Label e Combobox para Filtro 2
+label_opt2 = tk.Label(frame_left, text="Filtro 2:")
+label_opt2.grid(row=2, column=0, padx=5, pady=50, sticky="w")
 combo_opt2 = ttk.Combobox(frame_left, values=options, state="readonly")
 combo_opt2.set("Selecione a Opção")
-combo_opt2.pack(pady=5)
+combo_opt2.grid(row=2, column=1, padx=5, pady=50, sticky="ew")
 
-label_opt3 = tk.Label(frame_left, text="Selecione a Opção 3:")
-label_opt3.pack(pady=5)
+# Label e Combobox para Filtro 3
+label_opt3 = tk.Label(frame_left, text="Filtro 3:")
+label_opt3.grid(row=3, column=0, padx=5, pady=50, sticky="w")
 combo_opt3 = ttk.Combobox(frame_left, values=options, state="readonly")
 combo_opt3.set("Selecione a Opção")
-combo_opt3.pack(pady=5)
+combo_opt3.grid(row=3, column=1, padx=5, pady=50, sticky="ew")
 
-btn_confirm = tk.Button(frame_left, text="Confirmar", command=confirm_action, width=20, height=20)
-btn_confirm.pack(pady=10)
+# Label adicional
+# label_1 = tk.Label(frame_left, text="")
+# label_1.grid(row=4, column=0, columnspan=3, pady=30)
 
+# Botão de confirmação
+btn_confirm = tk.Button(frame_left, text="Confirmar", command=confirm_action)
+btn_confirm.grid(row=5, column=0, columnspan=3, pady=50)
+
+# Canvas no frame direito
 canvas = tk.Canvas(frame_right, bg="lightblue")
 canvas.pack(fill=tk.BOTH, expand=True)
 
